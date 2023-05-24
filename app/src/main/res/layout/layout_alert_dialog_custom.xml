@@ -17,10 +17,10 @@ android:layout_gravity="center_horizontal"
 	android:text="Header"
 	android:textStyle="bold"
 	android:fontFamily="cursive"
-	android:textSize="32sp"
+	android:textSize="24sp"
 	android:id="@+id/ad_header"
-	android:padding="8dp"
-	android:textColor="@color/teal_200"
+	android:padding="4dp"
+	android:textColor="@color/purple_200"
 	/>
 	<TextView
 		android:layout_width="match_parent"
@@ -29,7 +29,7 @@ android:layout_gravity="center_horizontal"
 		android:id="@+id/ad_msg"
 		android:textStyle="italic"
 		android:fontFamily="monospace"
-		android:textSize="24sp"
+		android:textSize="16sp"
 		android:textColor="@color/black"
 		/>
 </LinearLayout>

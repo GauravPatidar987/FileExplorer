@@ -9,12 +9,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
-import androidx.annotation.MainThread;
+import androidx.recyclerview.widget.RecyclerView;
 import com.fiex.MainActivity;
 import com.fiex.R;
 import android.view.View;
 import android.widget.TextView;
-import androidx.recyclerview.widget.RecyclerView;
 import com.fiex.adapter.FiAdapter.FiVH;
 import com.fiex.model.Fi;
 import java.io.File;
@@ -52,7 +51,7 @@ public class FiAdapter extends RecyclerView.Adapter<FiAdapter.FiVH> {
 
 		@Override
 		public boolean onLongClick(View arg0) {
-			act.onClick(arg0, getAdapterPosition());
+			act.onClick2(arg0, getAdapterPosition());
 			arg0.showContextMenu();
 			return true;
 		}
