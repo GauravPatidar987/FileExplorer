@@ -45,6 +45,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
 			android:background="@null"
+			android:id="@+id/id_ok"
 			android:scaleType="centerInside"
 			android:layout_marginRight="8dp"
             android:src="@drawable/ic_ok" />
@@ -53,7 +54,8 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
 			android:background="@null"
-			android:scaleType="fitCenter"		
+			android:scaleType="fitCenter"
+			android:id="@+id/id_cancel"	
             android:src="@drawable/ic_cancel" />
     </LinearLayout>
 

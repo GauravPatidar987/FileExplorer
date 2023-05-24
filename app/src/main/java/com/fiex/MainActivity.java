@@ -8,10 +8,13 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,16 +25,21 @@ import com.fiex.model.Fi;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends Activity implements OnClickListener2 {
 	public int REQ_EXTERNAL_STORAGE = 12;
-	RecyclerView rec;
+	public RecyclerView rec;
+	public FiAdapter adp;
 	List<File> list;
-	int position;
-	String action;
-	AlertDialog.Builder ad,rf;
-	TextView txtHead, txtMsg,txtFnm;
+	static int position;
+	public String action, cPath;
+	AlertDialog.Builder ad, rf;
+	TextView txtHead, txtMsg, txtFnm;
+	ImageButton iOk, iCancel;
+	MainActivity ma;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,62 +50,104 @@ public class MainActivity extends Activity implements OnClickListener2 {
 		rec.setLayoutManager(new LinearLayoutManager(this));
 		if (this.getPackageManager().checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,
 				this.getPackageName()) == PackageManager.PERMISSION_GRANTED) {
-			String path = Environment.getExternalStorageDirectory().toString();
-			File directory = new File(path);
-			File[] files = directory.listFiles();
-			list = Arrays.asList(files);
-			rec.setAdapter(new FiAdapter(list, this));
+			cPath = Environment.getExternalStorageDirectory().toString();
+			list = getAll();
+			ma = MainActivity.this;
+			adp = new FiAdapter(list, MainActivity.this);
+			rec.setAdapter(adp);
 		} else {
 			requestPermissions(new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE }, REQ_EXTERNAL_STORAGE);
 		}
 	}
 
+	public List<File> getAll() {
+		List<File> list;
+		File director = new File(cPath);
+		File[] files = director.listFiles();
+		list = Arrays.asList(files);
+		return list;
+	}
+
 	@Override
 	public boolean onContextItemSelected(MenuItem arg0) {
 		action = arg0.getTitle().toString();
-		txtHead.setText("Are you sure to " + action);
-		ad.show();
+		Toast.makeText(this, position + "-?", Toast.LENGTH_SHORT).show();
+		if (action.equals("Delete")) {
+			ad = new AlertDialog.Builder(this);
+			View c = LayoutInflater.from(this).inflate(R.layout.layout_alert_dialog_custom, null);
+			txtHead = c.findViewById(R.id.ad_header);
+			txtMsg = c.findViewById(R.id.ad_msg);
+			txtHead.setText("Are you sure to " + action);
+			txtMsg.setText(list.get(position).getAbsolutePath());
+			ad.setView(c);
+			final int pos = position;
+			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.dismiss();
+					File df = new File(list.get(pos).getAbsolutePath());
+					if (df.isFile()) {
+						if (df.delete()) {
+							List<File> newList = getAll();
+							adp = new FiAdapter(newList, ma);
+							rec.setAdapter(adp);
+							adp.notifyDataSetChanged();
+						}
+					}
+				}
+
+			});
+			ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.dismiss();
+				}
+			});
+			ad.show();
+		} else {
+			Toast.makeText(this, position + "<-", Toast.LENGTH_SHORT).show();
+			rf = new AlertDialog.Builder(this);
+			View cc = LayoutInflater.from(this).inflate(R.layout.layout_rename_file, null);
+			txtFnm = cc.findViewById(R.id.txt_file_name);
+			iCancel = cc.findViewById(R.id.id_cancel);
+			iOk = cc.findViewById(R.id.id_ok);
+			final int pos = position;
+			txtFnm.setText(list.get(pos).getName());
+			rf.setView(cc);
+			final AlertDialog aa = rf.show();
+			iOk.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					final File file1 = new File(list.get(pos).getAbsolutePath());
+					final String nNm = txtFnm.getText().toString();
+					final File file2 = new File(list.get(pos).getParent() + "/" + nNm);
+					if (file1.isFile() && nNm != null && nNm.length() > 0 && !nNm.equals(file1.getName())) {
+						if (file1.renameTo(file2)) {
+							aa.dismiss();
+							List<File> newList = getAll();
+							adp = new FiAdapter(newList, ma);
+							rec.setAdapter(adp);
+							adp.notifyDataSetChanged();
+
+							//	adp.notifyItemChanged(pos);
+						}
+					}
+				}
+			});
+			iCancel.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					aa.dismiss();
+				}
+			});
+
+		}
 		return super.onContextItemSelected(arg0);
 	}
 
 	@Override
-	public void onClick2(View v, int position) {
-		position = position;
-		{
-			//Toast.makeText(this, position + "", Toast.LENGTH_SHORT).show();
-			ad = new AlertDialog.Builder(this);
-			rf=new AlertDialog.Builder(this);
-			View c = LayoutInflater.from(v.getContext()).inflate(R.layout.layout_alert_dialog_custom, null);
-			View cc=LayoutInflater.from(v.getContext()).inflate(R.layout.layout_rename_file,null);
-			txtHead = c.findViewById(R.id.ad_header);
-			txtMsg = c.findViewById(R.id.ad_msg);
-			txtFnm=cc.findViewById(R.id.txt_file_name);
-			txtMsg.setText(list.get(position).getAbsolutePath());
-			txtFnm.setText(list.get(position).getName());
-			ad.setView(c);
-			rf.setView(cc);
-			final int pos = position;
-			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-					if (action.equals("Rename")) {
-						rf.show();
-					/*	final File file1 = new File(list.get(pos).getAbsolutePath());
-						final File file2 = new File(list.get(pos).getParent() + "/dummy");
-						if (file1.isFile()) {
-							if (file1.renameTo(file2)) {
+	public void onClick2(View v, int ps) {
+		position = ps;
 
-							}
-						}
-						*/
-					}
-				}
-			});
-			ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog, int id) {
-
-				}
-			});
-		}
+		//	Toast.makeText(this, position + "", Toast.LENGTH_SHORT).show();
 
 	}
 }
