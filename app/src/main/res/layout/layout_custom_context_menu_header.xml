@@ -1,0 +1,22 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+	android:padding="8dp"
+    android:orientation="horizontal">
+<ImageView
+	android:layout_width="48dp"
+	android:layout_height="48dp"
+	android:src="@drawable/ic_context_menu_header"
+	/>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="Select Action"
+		android:textStyle="bold"
+		android:textSize="24sp"
+		android:layout_marginLeft="12dp"
+		android:fontFamily="cursive"
+		android:textColor="@color/purple_700"
+		/>
+</LinearLayout>

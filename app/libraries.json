@@ -1,0 +1,9 @@
+[
+  {
+    "artifactId": "recyclerview",
+    "excludes": [],
+    "groupId": "androidx.recyclerview",
+    "scope": "compile",
+    "versionName": "1.3.0"
+  }
+]
