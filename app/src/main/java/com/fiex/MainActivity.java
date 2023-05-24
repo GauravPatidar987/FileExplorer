@@ -29,8 +29,9 @@ public class MainActivity extends Activity implements OnClickListener2 {
 	RecyclerView rec;
 	List<File> list;
 	int position;
-	AlertDialog.Builder ad;
-	TextView txtHead, txtMsg;
+	String action;
+	AlertDialog.Builder ad,rf;
+	TextView txtHead, txtMsg,txtFnm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,8 @@ public class MainActivity extends Activity implements OnClickListener2 {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem arg0) {
-		txtHead.setText("Are you sure to " + arg0.getTitle());
+		action = arg0.getTitle().toString();
+		txtHead.setText("Are you sure to " + action);
 		ad.show();
 		return super.onContextItemSelected(arg0);
 	}
@@ -62,16 +64,32 @@ public class MainActivity extends Activity implements OnClickListener2 {
 	public void onClick2(View v, int position) {
 		position = position;
 		{
-			Toast.makeText(this, position + "", Toast.LENGTH_SHORT).show();
+			//Toast.makeText(this, position + "", Toast.LENGTH_SHORT).show();
 			ad = new AlertDialog.Builder(this);
+			rf=new AlertDialog.Builder(this);
 			View c = LayoutInflater.from(v.getContext()).inflate(R.layout.layout_alert_dialog_custom, null);
+			View cc=LayoutInflater.from(v.getContext()).inflate(R.layout.layout_rename_file,null);
 			txtHead = c.findViewById(R.id.ad_header);
 			txtMsg = c.findViewById(R.id.ad_msg);
+			txtFnm=cc.findViewById(R.id.txt_file_name);
 			txtMsg.setText(list.get(position).getAbsolutePath());
+			txtFnm.setText(list.get(position).getName());
 			ad.setView(c);
+			rf.setView(cc);
+			final int pos = position;
 			ad.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int id) {
+					if (action.equals("Rename")) {
+						rf.show();
+					/*	final File file1 = new File(list.get(pos).getAbsolutePath());
+						final File file2 = new File(list.get(pos).getParent() + "/dummy");
+						if (file1.isFile()) {
+							if (file1.renameTo(file2)) {
 
+							}
+						}
+						*/
+					}
 				}
 			});
 			ad.setNegativeButton("No", new DialogInterface.OnClickListener() {
